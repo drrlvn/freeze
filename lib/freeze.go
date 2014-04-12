@@ -1,4 +1,4 @@
-package main
+package lib
 
 import (
     "crypto/sha1"
@@ -10,12 +10,12 @@ import (
     "sync"
 )
 
-type HashResult struct {
+type hashResult struct {
     path string
     hash string
 }
 
-func calcHash(wg *sync.WaitGroup, paths <-chan string, hashes chan<- *HashResult) {
+func calcHash(wg *sync.WaitGroup, paths <-chan string, hashes chan<- *hashResult) {
     defer wg.Done()
     for path := range paths {
         func() {
@@ -31,12 +31,12 @@ func calcHash(wg *sync.WaitGroup, paths <-chan string, hashes chan<- *HashResult
             if err != nil {
                 panic(err)
             }
-            hashes <- &HashResult{path, fmt.Sprintf("%x", h.Sum(nil))}
+            hashes <- &hashResult{path, fmt.Sprintf("%x", h.Sum(nil))}
         }()
     }
 }
 
-func collectResults(hashes <-chan *HashResult, results chan<- map[string]string) {
+func collectResults(hashes <-chan *hashResult, results chan<- map[string]string) {
     resultsMap := make(map[string]string)
     for result := range hashes {
         resultsMap[result.path] = result.hash
@@ -44,7 +44,7 @@ func collectResults(hashes <-chan *HashResult, results chan<- map[string]string)
     results <- resultsMap
 }
 
-func generateFreeze() map[string]string {
+func Generate() map[string]string {
     const COUNT = 64
     cwd, err := os.Getwd()
     if err != nil {
@@ -52,7 +52,7 @@ func generateFreeze() map[string]string {
     }
     var wg sync.WaitGroup
     paths := make(chan string, COUNT)
-    hashes := make(chan *HashResult, COUNT)
+    hashes := make(chan *hashResult, COUNT)
     results := make(chan map[string]string)
     for i := 0; i < COUNT; i++ {
         wg.Add(1)
@@ -79,8 +79,8 @@ func generateFreeze() map[string]string {
     return resultsMap
 }
 
-func verifyFreeze(expected map[string]string) {
-    results := generateFreeze()
+func Verify(expected map[string]string) {
+    results := Generate()
     for path, hash := range expected {
         if expectedHash, ok := results[path]; ok {
             if hash != expectedHash {
@@ -91,7 +91,7 @@ func verifyFreeze(expected map[string]string) {
             fmt.Printf("%s missing\n", path)
         }
     }
-    for path, _ := range(results) {
+    for path, _ := range results {
         fmt.Printf("%s new\n", path)
     }
 }

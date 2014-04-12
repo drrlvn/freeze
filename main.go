@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"runtime"
+	"./lib"
 )
 
 const FREEZE_FILE = ".freeze"
@@ -59,7 +60,7 @@ func runInit(cmd *Command, args []string) {
 		}
 	}
 
-	results := generateFreeze()
+	results := lib.Generate()
 	b, err := json.MarshalIndent(results, "", "    ")
 	if err != nil {
 		panic(err)
@@ -77,7 +78,7 @@ func runCheck(cmd *Command, args []string) {
 	flags := flag.NewFlagSet("check", flag.ExitOnError)
 	flags.Parse(args)
 
-	verifyFreeze(getFreeze())
+	lib.Verify(getFreeze())
 }
 
 func runUpdate(cmd *Command, args []string) {
