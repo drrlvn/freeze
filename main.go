@@ -1,7 +1,6 @@
 package main
 
 import (
-	"./freeze"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -60,7 +59,7 @@ func runInit(cmd *Command, args []string) {
 		}
 	}
 
-	results := freeze.Generate()
+	results := GenerateFreeze()
 	b, err := json.MarshalIndent(results, "", "    ")
 	if err != nil {
 		panic(err)
@@ -78,7 +77,7 @@ func runCheck(cmd *Command, args []string) {
 	flags := flag.NewFlagSet("check", flag.ExitOnError)
 	flags.Parse(args)
 
-	freeze.Verify(getFreeze())
+	VerifyFreeze(getFreeze())
 }
 
 func runUpdate(cmd *Command, args []string) {

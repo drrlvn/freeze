@@ -1,4 +1,4 @@
-package freeze
+package main
 
 import (
     "crypto/sha1"
@@ -44,7 +44,7 @@ func collectResults(hashes <-chan *hashResult, results chan<- map[string]string)
     results <- resultsMap
 }
 
-func Generate() map[string]string {
+func GenerateFreeze() map[string]string {
     const COUNT = 64
     cwd, err := os.Getwd()
     if err != nil {
@@ -79,8 +79,8 @@ func Generate() map[string]string {
     return resultsMap
 }
 
-func Verify(expected map[string]string) {
-    results := Generate()
+func VerifyFreeze(expected map[string]string) {
+    results := GenerateFreeze()
     for path, hash := range expected {
         if expectedHash, ok := results[path]; ok {
             if hash != expectedHash {
