@@ -1,13 +1,13 @@
 package main
 
 import (
+	"./freeze"
 	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
 	"os"
 	"runtime"
-	"./lib"
 )
 
 const FREEZE_FILE = ".freeze"
@@ -60,7 +60,7 @@ func runInit(cmd *Command, args []string) {
 		}
 	}
 
-	results := lib.Generate()
+	results := freeze.Generate()
 	b, err := json.MarshalIndent(results, "", "    ")
 	if err != nil {
 		panic(err)
@@ -78,7 +78,7 @@ func runCheck(cmd *Command, args []string) {
 	flags := flag.NewFlagSet("check", flag.ExitOnError)
 	flags.Parse(args)
 
-	lib.Verify(getFreeze())
+	freeze.Verify(getFreeze())
 }
 
 func runUpdate(cmd *Command, args []string) {

@@ -1,4 +1,4 @@
-package lib
+package freeze
 
 import (
     "crypto/sha1"
